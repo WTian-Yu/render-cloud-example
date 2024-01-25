@@ -5,11 +5,43 @@ from flask_cors import CORS
 
 from auth import AuthError, requires_auth
 
+
+ACTORS_PER_PAGE = 5
+
+
+def paginate(request, actors):
+    page = request.args.get("page", 1, type=int)
+    # check if page query is too big to find actors
+    if ((len(actors) < ACTORS_PER_PAGE * (page-1)) and (page > 1)):
+        abort(404)
+    start = (page - 1) * ACTORS_PER_PAGE
+    end = start + ACTORS_PER_PAGE
+
+    all_actors = [a.format() for a in actors]
+    current_actors = all_actors[start:end]
+    return current_actors
+
+
 def create_app(test_config=None):
 
     app = Flask(__name__)
     setup_db(app)
-    CORS(app)
+    
+    # Set up CORS. Allow '*' for origins. Delete the sample route
+    CORS(app, resources={r"/*": {"origins": "*"}})
+
+    # Use the after_request decorator to set Access-Control-Allow
+
+    @app.after_request
+    def after_request(response):
+        response.headers.add(
+            'Access-Control-Allow-Headers', 'Content-Type, Authorization'
+        )
+        response.headers.add(
+            'Access-Control-Allow-Headers', 'GET, POST, PATCH, DELETE, OPTIONS'
+        )
+        return response
+    
 
     @app.route('/')
     def welcome_page():
@@ -21,14 +53,17 @@ def create_app(test_config=None):
     @app.route('/actors')
     def get_actors():
         """
-        returns status code 200 and json {"success": True, "actors": actors}
+        returns status code 200 
+            and json {"success": True, "actors": actors, 'total_actors': total actors length)}
             where actors is the list of actors
             or appropriate status code indicating reason for failure
         """
         try:
-            actors = [actor.format() for actor in Actor.query.all()]
+            actors = Actor.query.order_by(Actor.id).all()
+            cur_actors = paginate(request, actors)
             return jsonify({'success': True,
-                            'actors': actors})
+                            'actors': cur_actors,
+                            'total_actors': len(actors)})
         except BaseException:
             abort(422)
     
@@ -80,7 +115,7 @@ def create_app(test_config=None):
             actor.update()
 
             return jsonify({'success': True,
-                            'actor': [actor.format()]})
+                            'actor': actor.format()})
         except BaseException:
             abort(422)
     
@@ -109,14 +144,16 @@ def create_app(test_config=None):
     @app.route('/movies')
     def get_movies():
         """
-        returns status code 200 and json {"success": True, "movies": movies}
+        returns status code 200 and json {"success": True, "movies": movies, 'total_movies': total movies length}
             where movies is the list of movies
             or appropriate status code indicating reason for failure
         """
         try:
-            movies = [movie.format() for movie in Movie.query.all()]
+            movies = Movie.query.order_by(Movie.id).all()
+            cur_movies = paginate(request, movies)
             return jsonify({'success': True,
-                            'movies': movies})
+                            'movies': cur_movies,
+                            'total_movies':len(movies)})
         except BaseException:
             abort(422)
     
@@ -157,16 +194,14 @@ def create_app(test_config=None):
             body = request.get_json()
             title = body.get("title", None)
             release_date = body.get("release_date", None)
-            
             if(title is not None):
                 movie.title = title
             if(release_date is not None):
                 movie.release_date = release_date
-            
             movie.update()
 
             return jsonify({'success': True,
-                            'movie': [movie.format()]})
+                            'movie': movie.format()})
         except BaseException:
             abort(422)
     
