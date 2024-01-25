@@ -12,7 +12,7 @@ ACTORS_PER_PAGE = 5
 def paginate(request, actors):
     page = request.args.get("page", 1, type=int)
     # check if page query is too big to find actors
-    if ((len(actors) < ACTORS_PER_PAGE * (page-1)) and (page > 1)):
+    if ((len(actors) < ACTORS_PER_PAGE * (page - 1)) and (page > 1)):
         abort(404)
     start = (page - 1) * ACTORS_PER_PAGE
     end = start + ACTORS_PER_PAGE
@@ -26,7 +26,7 @@ def create_app(test_config=None):
 
     app = Flask(__name__)
     setup_db(app)
-    
+
     # Set up CORS. Allow '*' for origins. Delete the sample route
     CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -41,21 +41,21 @@ def create_app(test_config=None):
             'Access-Control-Allow-Headers', 'GET, POST, PATCH, DELETE, OPTIONS'
         )
         return response
-    
 
     @app.route('/')
     def welcome_page():
         return "Casting Agency Homepage"
 
     # Actors Routes
-    
-    
+
     @app.route('/actors')
     @requires_auth('get:actors')
     def get_actors():
         """
-        returns status code 200 
-            and json {"success": True, "actors": actors, 'total_actors': total actors length)}
+        returns status code 200 and
+            json {"success": True,
+                  "actors": actors,
+                  'total_actors': total actors length)}
             where actors is the list of actors
             or appropriate status code indicating reason for failure
         """
@@ -67,7 +67,7 @@ def create_app(test_config=None):
                             'total_actors': len(actors)})
         except BaseException:
             abort(422)
-    
+
     @app.route('/actors', methods=['POST'])
     @requires_auth('post:actors')
     def create_actor():
@@ -89,7 +89,7 @@ def create_app(test_config=None):
                             'actor': new_actor.format()})
         except BaseException:
             abort(422)
-    
+
     @app.route('/actors/<int:actor_id>', methods=['PATCH'])
     @requires_auth('patch:actors')
     def patch_actor(actor_id):
@@ -121,7 +121,7 @@ def create_app(test_config=None):
                             'actor': actor.format()})
         except BaseException:
             abort(422)
-    
+
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
     @requires_auth('delete:actors')
     def delete_actor(actor_id):
@@ -134,22 +134,24 @@ def create_app(test_config=None):
             actor = Actor.query.filter(Actor.id == actor_id).one_or_none()
             if(actor is None):
                 abort(404)
-            
+
             actor.delete()
 
             return jsonify({'success': True,
                             'delete': actor_id})
         except BaseException:
             abort(422)
-    
+
     # Movies Routes
-    
-    
+
     @app.route('/movies')
     @requires_auth('get:movies')
     def get_movies():
         """
-        returns status code 200 and json {"success": True, "movies": movies, 'total_movies': total movies length}
+        returns status code 200 and json
+            {"success": True,
+             "movies": movies,
+             'total_movies': total movies length}
             where movies is the list of movies
             or appropriate status code indicating reason for failure
         """
@@ -158,10 +160,10 @@ def create_app(test_config=None):
             cur_movies = paginate(request, movies)
             return jsonify({'success': True,
                             'movies': cur_movies,
-                            'total_movies':len(movies)})
+                            'total_movies': len(movies)})
         except BaseException:
             abort(422)
-    
+
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
     def create_movie():
@@ -182,7 +184,7 @@ def create_app(test_config=None):
                             'movie': new_movie.format()})
         except BaseException:
             abort(422)
-    
+
     @app.route('/movies/<int:movie_id>', methods=['PATCH'])
     @requires_auth('patch:movies')
     def patch_movie(movie_id):
@@ -211,7 +213,7 @@ def create_app(test_config=None):
                             'movie': movie.format()})
         except BaseException:
             abort(422)
-    
+
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
     @requires_auth('delete:movies')
     def delete_movie(movie_id):
@@ -224,18 +226,16 @@ def create_app(test_config=None):
             movie = Movie.query.filter(Movie.id == movie_id).one_or_none()
             if(movie is None):
                 abort(404)
-            
+
             movie.delete()
 
             return jsonify({'success': True,
                             'delete': movie_id})
         except BaseException:
             abort(422)
-    
-    
+
     # Error Handling
-    
-        
+
     @app.errorhandler(422)
     def unprocessable(error):
         return jsonify({
@@ -261,6 +261,7 @@ def create_app(test_config=None):
         }), error.status_code
 
     return app
+
 
 app = create_app()
 

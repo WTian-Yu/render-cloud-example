@@ -52,10 +52,30 @@ psql postgres_test < postgres_test.psql
 python test_app.py
 ```
 
+### Authentication
+There 3 roles with different permissions
+The token is setted in `setup.sh` file
+
+* Casting Assistant
+ - Actors: view
+ - Movies: view
+* Casting Director
+ - Actors: view / add / modify / delete
+ - Movies: view / moify
+* Executive Producer
+ - Actors: view / add / modify / delete
+ - Movies: view / moify / add / delete
+
 
 ### API Reference
 #### Base url
-`http://127.0.0.1:5000/`
+`https://render-deployment-example-ubm5.onrender.com`
+#### Authentication headers
+For each API should includes the Authorization token in headers, following endpoint exmaples don't include the token for more readable. The token is setted in `setup.sh` file
+- Sample:
+``` bash
+curl https://render-deployment-example-ubm5.onrender.com/actors -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjRURnZZZW9YV2hyUDVsNHVzTThFaiJ9.eyJpc3MiOiJodHRwczovL2Rldi02MzBzdmhrNGZlMzV2Z3EzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwNDA5MTE0Mjk3MDk2NjY0MDU4NiIsImF1ZCI6IkNhc3RpbmdBZ2VuY3kiLCJpYXQiOjE3MDYxNzk3OTMsImV4cCI6MTcwNjI2NjE5MywiYXpwIjoiUXVyTW9teGZqQ3ViSFNMS0dISW5FU3hnRmNpNkplTkoiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTphY3RvcnMiLCJkZWxldGU6bW92aWVzIiwiZ2V0OmFjdG9ycyIsImdldDptb3ZpZXMiLCJwYXRjaDphY3RvcnMiLCJwYXRjaDptb3ZpZXMiLCJwb3N0OmFjdG9ycyIsInBvc3Q6bW92aWVzIl19.XpjBktsfXTUJIR3Cm7PvZvg2tVkbDkNcl5c6X4nGDHAVPwviXhVtPJBDvQ545Xe2Mq-_Cqe_hnHviw3A6EPHBJL-6RPvuxzTgJXOAnbuREn0AxNbVMeYUZUWXiGE5nPNniNwjN-nHx-p4RQjaBW23weJXjMd0_VZjhUEnByYADbYFVGUeKu9QmuxILheUXXrF72B6ffbI2gC__AjBp4uf9Vl1f7PAwZoPYkaw8f_WJ62eiGdilLd8aVT3qXn2N2THCKGTTcExIjpk_lBU23d1skK_Gby2phECKHNp8OteO2JEGSTOr_AhIFSUXcJOujzNO9OJ7X6IbLMZJkeSr2-lw"
+```
 
 #### Error Handling
 Errors are returned as JSON objects in the following format:
@@ -82,8 +102,8 @@ or
 - Fetches a paginated set of actors, a total number of actors.
 - Request Arguments: `page` - integer
 - Returns: An object with 5 paginated actors, total actors
-- Sample 1: `curl http://127.0.0.1:5000/actors`
-- Sample 2: `curl http://127.0.0.1:5000/actors?page=2`
+- Sample 1: `curl https://render-deployment-example-ubm5.onrender.com/actors`
+- Sample 2: `curl https://render-deployment-example-ubm5.onrender.com/actors?page=2`
 
 ```json
 {
@@ -115,7 +135,7 @@ or
 }
 ```
 - Returns: the information of the created actor
-- Sample : `curl http://127.0.0.1:5000/actors -X POST -H "Content-Type: application/json" -d '{"name":"Heres a new actor name string", "age": 18, "gender": "Heres a new actor gender string"}'`
+- Sample : `curl https://render-deployment-example-ubm5.onrender.com/actors -X POST -H "Content-Type: application/json" -d '{"name":"Heres a new actor name string", "age": 18, "gender": "Heres a new actor gender string"}'`
 ```json
 {
     "actor": {
@@ -143,7 +163,7 @@ or
 }
 ```
 - Returns: the information of the updated actor
-- Sample : `curl http://127.0.0.1:5000/actors/10 -X PATCH -H "Content-Type: application/json" -d '{"name": "Heres a patched actor name string", "age": 18, "gender": "Heres a patched actor gender string"}'`
+- Sample : `curl https://render-deployment-example-ubm5.onrender.com/actors/10 -X PATCH -H "Content-Type: application/json" -d '{"name": "Heres a patched actor name string", "age": 18, "gender": "Heres a patched actor gender string"}'`
 ```json
 {
     "actor": {
@@ -162,7 +182,7 @@ or
 - Deletes a specified actor using the id of the actors
 - Request Arguments: `id` - integer
 - Returns: Return HTTP status code and id of deleted the actor.
-- Sample : `curl -X DELETE http://127.0.0.1:5000/actors/10`
+- Sample : `curl -X DELETE https://render-deployment-example-ubm5.onrender.com/actors/10`
 ```json
 {
     "delete": 10,
@@ -178,8 +198,8 @@ or
 - Fetches a paginated set of movies, a total number of movies.
 - Request Arguments: `page` - integer
 - Returns: An object with 5 paginated movies, total movies
-- Sample 1: `curl http://127.0.0.1:5000/movies`
-- Sample 2: `curl http://127.0.0.1:5000/movies?page=2`
+- Sample 1: `curl https://render-deployment-example-ubm5.onrender.com/movies`
+- Sample 2: `curl https://render-deployment-example-ubm5.onrender.com/movies?page=2`
 
 ```json
 {
@@ -209,7 +229,7 @@ or
 }
 ```
 - Returns: the information of the created actor
-- Sample : `curl http://127.0.0.1:5000/movies -X POST -H "Content-Type: application/json" -d '{"title": "Heres a new movie title string", "release_date": "2024-12-25T00:00:00.000Z"}'`
+- Sample : `curl https://render-deployment-example-ubm5.onrender.com/movies -X POST -H "Content-Type: application/json" -d '{"title": "Heres a new movie title string", "release_date": "2024-12-25T00:00:00.000Z"}'`
 ```json
 {
     "movie": {
@@ -235,7 +255,7 @@ or
 }
 ```
 - Returns: the information of the updated movie
-- Sample : `curl http://127.0.0.1:5000/movies/9 -X PATCH -H "Content-Type: application/json" -d '{"title": "Heres a patched movie title string", "release_date": "2024-12-26T00:00:00.000Z"}'`
+- Sample : `curl https://render-deployment-example-ubm5.onrender.com/movies/9 -X PATCH -H "Content-Type: application/json" -d '{"title": "Heres a patched movie title string", "release_date": "2024-12-26T00:00:00.000Z"}'`
 ```json
 {
     "movie": {
@@ -253,7 +273,7 @@ or
 - Deletes a specified movie using the id of the movies
 - Request Arguments: `id` - integer
 - Returns: Return HTTP status code and id of deleted the movie.
-- Sample : `curl -X DELETE http://127.0.0.1:5000/movies/9`
+- Sample : `curl -X DELETE https://render-deployment-example-ubm5.onrender.com/movies/9`
 ```json
 {
     "delete": 9,
