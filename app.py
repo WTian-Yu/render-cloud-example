@@ -51,6 +51,7 @@ def create_app(test_config=None):
     
     
     @app.route('/actors')
+    @requires_auth('get:actors')
     def get_actors():
         """
         returns status code 200 
@@ -68,6 +69,7 @@ def create_app(test_config=None):
             abort(422)
     
     @app.route('/actors', methods=['POST'])
+    @requires_auth('post:actors')
     def create_actor():
         """
         returns status code 200 and json {"success": True, "actor": actor}
@@ -89,6 +91,7 @@ def create_app(test_config=None):
             abort(422)
     
     @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+    @requires_auth('patch:actors')
     def patch_actor(actor_id):
         """
         returns status code 200 and json {"success": True, "actor": actor}
@@ -120,6 +123,7 @@ def create_app(test_config=None):
             abort(422)
     
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+    @requires_auth('delete:actors')
     def delete_actor(actor_id):
         """
         returns status code 200 and json {"success": True, "delete": id}
@@ -142,6 +146,7 @@ def create_app(test_config=None):
     
     
     @app.route('/movies')
+    @requires_auth('get:movies')
     def get_movies():
         """
         returns status code 200 and json {"success": True, "movies": movies, 'total_movies': total movies length}
@@ -158,6 +163,7 @@ def create_app(test_config=None):
             abort(422)
     
     @app.route('/movies', methods=['POST'])
+    @requires_auth('post:movies')
     def create_movie():
         """
         returns status code 200 and json {"success": True, "movie": movie}
@@ -178,6 +184,7 @@ def create_app(test_config=None):
             abort(422)
     
     @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+    @requires_auth('patch:movies')
     def patch_movie(movie_id):
         """
         returns status code 200 and json {"success": True, "movie": movie}
@@ -206,6 +213,7 @@ def create_app(test_config=None):
             abort(422)
     
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+    @requires_auth('delete:movies')
     def delete_movie(movie_id):
         """
         returns status code 200 and json {"success": True, "delete": id}
